@@ -7,6 +7,7 @@ Description:    Perform sentiment analysis on the billboard top 100 songs from 1
 """
 
 # http://www.cs.cornell.edu/people/pabo/movie-review-data/
+# http://planspace.org/20150607-textblob_sentiment/
 
 import pandas as pd
 from textblob import TextBlob
@@ -29,18 +30,20 @@ for lyric in data['Lyrics']:
     text = TextBlob(str(lyric))
     data.loc[i, 'polarity'] = text.sentiment.polarity
     data.loc[i, 'subjectivity'] = text.sentiment.subjectivity
-    naiveBayes = TextBlob(str(text), analyzer=NaiveBayesAnalyzer()).sentiment
-    data.loc[i, 'classification'], data.loc[i, 'p_pos'], data.loc[i, 'p_neg'] = naiveBayes
+    # naiveBayes = TextBlob(str(text), analyzer=NaiveBayesAnalyzer()).sentiment
+    # data.loc[i, 'classification'], data.loc[i, 'p_pos'], data.loc[i, 'p_neg'] = naiveBayes
+
+    if data.loc[i, 'polarity'] >= 1:
+        data.loc[i, 'classification'] = 'positive'
+    elif 0 < data.loc[i, 'polarity'] < 1:
+        data.loc[i, 'classification'] = 'slightly positive'
+    elif 0 < data.loc[i, 'polarity'] == 0:
+        data.loc[i, 'classification'] = 'neutral'
+    elif -1 < data.loc[i, 'polarity'] < 0:
+        data.loc[i, 'classification'] = 'slightly negative'
+    elif data.loc[i, 'polarity'] <= -1:
+        data.loc[i, 'classification'] = 'negative'
+    else:
+        data.loc[i, 'classification'] = 'unknown'
+
     i += 1
-
-print(data.head())
-
-# print(data.iloc[4000])
-
-# print(TextBlob(data.loc[4000, 'Lyrics'], analyzer=NaiveBayesAnalyzer()).sentiment)
-
-# x = TextBlob(data.loc[4000, 'Lyrics'], analyzer=NaiveBayesAnalyzer()).sentiment
-# classification, p_pos, p_neg = x
-# print("Classification: {}".format(classification))
-# print("Positive Polarity: {}".format(p_pos))
-# print("Negative Polarity: {}".format(p_neg))
