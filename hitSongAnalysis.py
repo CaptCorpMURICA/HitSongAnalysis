@@ -22,5 +22,9 @@ data['NumChars'] = data['Lyrics'].str.len()
 print(data.head())
 
 # Create polarity and subjectivity for sentiment analysis
-data[['Polarity', 'Subjectivity']] = data['Lyrics'].apply(lambda Lyrics: pd.Series(TextBlob(data["Lyrics"]).sentiment))
-print(data.head())
+i = 0
+for lyric in data['Lyrics']:
+    text = TextBlob(str(lyric))
+    data.loc[i:(i + 1), 'polarity'] = text.sentiment.polarity
+    data.loc[i:(i + 1), 'subjectivity'] = text.sentiment.subjectivity
+    i += 1
